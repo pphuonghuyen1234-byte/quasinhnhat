@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ô chữ bí mật</title>
+<title>Quà sinh nhật iu iu</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&subset=vietnamese&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fde7ee;--ink:#5b2a3f;--accent:#d63f7a;--rose:#ff8fb1;--panel:#fff;--line:#f7bfd0;--key:#ffd86b;
@@ -95,7 +95,7 @@ R.forEach(function(r,i){
 function win(){
   var n=(document.getElementById('name').value||'').trim()||'Thầy/Cô',w=document.getElementById('win');
   w.style.display='block';
-  w.innerHTML='<b>HẠNH PHÚC</b>Chúc mừng sinh nhật '+n+'! Chúc cô luôn hạnh phúc, nhiều sức khỏe và niềm vui. Cảm ơn cô vì tất cả!';
+  w.innerHTML='<b>HẠNH PHÚC</b>Chúc mừng sinh nhật '+n+'! Chúc cô luôn hạnh phúc, nhiều sức khỏe và niềm vui. Cảm ơn cô vì là một phần thanh xuân của iem nhứo!';
   document.getElementById('gift').style.display='block';
   w.scrollIntoView({behavior:'smooth',block:'center'});
 }
@@ -104,7 +104,7 @@ document.getElementById('box').onclick=function(){
   var n=esc((document.getElementById('name').value||'').trim()||'Cô'),f=esc((document.getElementById('from').value||'').trim());
   this.style.display='none';document.getElementById('boxHint').style.display='none';
   var c=document.getElementById('card');
-  c.innerHTML='<h2>Gửi '+n+'</h2><p>Chúc sếp Hồng Nhun Trần 8386, siêu nhiều sức khoẻ, luôn vui vẻ, tươi trẻ, tuổi mới hạnh phúc, yêu đời, không bị dl dí, ngày nào thức dậy cũng là ngày may mắn, yêu đời.<br>Cô Nhun nhớ chờ e lấy chồng giàu rồi đi cf 3 lần 1 ngày nhớ🤭 Hẹ Hẹ Hẹ😽<br>Hép pi hép pi bớt đâyyyyyy😘</p><p>'+(f?'Từ '+f:'Với tất cả lòng biết ơn')+' 🎂</p>';
+  c.innerHTML='<h2>Gửi '+n+'</h2><p>Chúc sếp Hồng Nhun Trần 8386, siêu nhiều sức khỏe, luôn vui vẻ, tươi trẻ, tuổi mới hạnh phúc, yêu đời, không bị dl dí, ngày nào thức dậy cũng là ngày may mắn, yêu đời.<br>Cô Nhun nhớ chờ e lấy chồng giàu rồi đi cf 3 lần 1 ngày nhớ🤭 Hẹ Hẹ Hẹ😽<br>Hép pi hép pi bớt đâyyyyyy😘</p><p>'+(f?'Từ '+f:'Với tất cả lòng biết ơn')+' 🎂</p>';
   c.style.display='block';
   var E=['🎈','🎉','🎊','🌸','✨'];
   for(var i=0;i<24;i++){var s=document.createElement('span');s.className='pop';s.textContent=E[i%5];s.style.left=Math.random()*95+'vw';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(function(x){x.remove()},3500,s)}
