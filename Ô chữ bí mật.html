@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ô chữ bí mật</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&subset=vietnamese&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fde7ee;--ink:#5b2a3f;--accent:#d63f7a;--rose:#ff8fb1;--panel:#fff;--line:#f7bfd0;--key:#ffd86b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a1620;--ink:#fde4ec;--accent:#ff9cbc;--panel:#3a2230;--line:#6a3a50}}
+:root[data-theme="dark"]{--bg:#2a1620;--ink:#fde4ec;--accent:#ff9cbc;--panel:#3a2230;--line:#6a3a50}
+body{background:var(--bg);color:var(--ink);font-family:"Baloo 2","Segoe UI",system-ui,sans-serif;font-size:18px;margin:0;display:flex;justify-content:center}
+main{width:100%;max-width:480px;padding:22px 16px 44px;box-sizing:border-box}
+h1{font-size:2rem;color:var(--accent);margin:0 0 4px;font-weight:700;line-height:1.2}
+p{margin:0 0 14px;line-height:1.45}
+#name,#from{font:inherit;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 14px;width:100%;box-sizing:border-box;margin-bottom:10px}
+#name::placeholder,#from::placeholder{color:var(--ink);opacity:.5}
+#name:focus-visible,#from:focus-visible,.clue input:focus-visible,#box:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+#grid{overflow-x:auto;margin:8px 0 18px;padding-bottom:4px}
+.row{display:flex;margin-bottom:3px}
+.cell{width:24px;height:28px;flex:none;margin-right:2px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:700;color:var(--ink)}
+.cell.on{background:var(--panel);border:2px solid var(--line);box-sizing:border-box}
+.cell.key{background:var(--key);border:2px solid var(--rose);box-sizing:border-box;color:#5b2a3f}
+.cell.gap{background:transparent}
+.clue{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:10px 14px;margin-bottom:10px}
+.clue.done{opacity:.65}
+.clue label{display:block;margin-bottom:4px;line-height:1.35}
+.clue input{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:2px solid var(--rose);width:100%;padding:4px 0;text-transform:uppercase;letter-spacing:.1em}
+#win{display:none;background:#ffc2d6;color:#5b2a3f;border-radius:20px;padding:16px;margin-bottom:16px;text-align:center;line-height:1.4}
+#win b{display:block;font-size:2rem;letter-spacing:.12em}
+#gift{display:none;text-align:center;margin-bottom:16px}
+#box{font-size:5rem;background:none;border:0;cursor:pointer;line-height:1;padding:8px}
+#card{display:none;background:var(--panel);color:var(--ink);border:2px solid var(--rose);border-radius:20px;padding:18px;text-align:left;line-height:1.55}
+#card h2{font-size:1.5rem;color:var(--accent);font-weight:700;margin:0 0 8px}
+#card p{margin:0 0 10px}
+.pop{position:fixed;top:-30px;font-size:26px;animation:fall 2.4s ease-in forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.pop{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Ô chữ bí mật 🎀</h1>
+  <p>Giải 8 gợi ý về tiệc sinh nhật. Cột chữ vàng sẽ ghép thành lời chúc dành cho cô.</p>
+  <input id="name" value="Cô Hồng Nhung" placeholder="Tên người nhận" maxlength="24" aria-label="Tên người nhận">
+  <input id="from" placeholder="Tên bạn (người gửi)" maxlength="24" aria-label="Tên người gửi">
+  <div id="win" role="status"></div>
+  <div id="gift"><button id="box" aria-label="Mở quà">🎁</button><p id="boxHint">Giải xong rồi! Bấm vào hộp quà để mở nhé.</p><div id="card"></div></div>
+  <div id="grid" aria-hidden="true"></div>
+  <div id="clues"></div>
+</main>
+<script>
+(function(){
+var R=[
+{a:['BANHKEM','BANHGATO'],k:3,c:'Món không thể thiếu trong tiệc sinh nhật, cắm nến lên trên (2 từ)'},
+{a:['BONGBAY'],k:5,c:'Thứ bơm đầy hơi, buộc dây trang trí tiệc (2 từ)'},
+{a:['NEN'],k:0,c:'Thổi tắt thứ này sau khi ước điều ước (1 từ)'},
+{a:['HOAHONG'],k:0,c:'Loài hoa thường tặng phái nữ, trùng với tên của cô (2 từ)'},
+{a:['PHAOHOA'],k:0,c:'Bắn lên trời, nổ sáng rực trong đêm lễ hội (2 từ)'},
+{a:['SINHNHAT'],k:3,c:'Ngày chào đời được kỷ niệm mỗi năm (2 từ)'},
+{a:['QUATANG'],k:1,c:'Thứ gói giấy đẹp, trao cho người được mừng (2 từ)'},
+{a:['CHUCMUNG'],k:0,c:'Câu nói đầu tiên dành cho nhân vật chính của buổi tiệc (2 từ)'}
+];
+var M=Math.max.apply(null,R.map(function(r){return r.k}));
+var norm=function(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toUpperCase().replace(/[^A-Z]/g,'')};
+var g=document.getElementById('grid'),cl=document.getElementById('clues'),done=0,rows=[];
+R.forEach(function(r,i){
+  var len=r.a[0].length,off=M-r.k,w=off+len,row=document.createElement('div'),cells=[];
+  row.className='row';
+  for(var c=0;c<13;c++){
+    var d=document.createElement('div');
+    d.className='cell gap';
+    if(c>=off&&c<off+len){d.className='cell '+(c===M?'key':'on');cells.push(d)}
+    row.appendChild(d);
+  }
+  g.appendChild(row);
+  var box=document.createElement('div');box.className='clue';
+  var id='q'+i;
+  box.innerHTML='<label for="'+id+'">'+(i+1)+'. '+r.c+'</label><input id="'+id+'" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Đáp án câu '+(i+1)+'">';
+  cl.appendChild(box);
+  var inp=box.querySelector('input'),ok=false;
+  inp.addEventListener('input',function(){
+    if(ok)return;
+    var v=norm(inp.value);
+    if(r.a.indexOf(v)>-1){
+      ok=true;inp.readOnly=true;box.className='clue done';
+      var word=r.a[r.a.indexOf(v)];
+      cells.forEach(function(d,j){d.textContent=word[j]});
+      if(++done===R.length)win();
+      else{var n=cl.querySelectorAll('input:not([readonly])')[0];if(n)n.focus()}
+    }
+  });
+});
+function win(){
+  var n=(document.getElementById('name').value||'').trim()||'Thầy/Cô',w=document.getElementById('win');
+  w.style.display='block';
+  w.innerHTML='<b>HẠNH PHÚC</b>Chúc mừng sinh nhật '+n+'! Chúc cô luôn hạnh phúc, nhiều sức khỏe và niềm vui. Cảm ơn cô vì tất cả!';
+  document.getElementById('gift').style.display='block';
+  w.scrollIntoView({behavior:'smooth',block:'center'});
+}
+var esc=function(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+document.getElementById('box').onclick=function(){
+  var n=esc((document.getElementById('name').value||'').trim()||'Cô'),f=esc((document.getElementById('from').value||'').trim());
+  this.style.display='none';document.getElementById('boxHint').style.display='none';
+  var c=document.getElementById('card');
+  c.innerHTML='<h2>Gửi '+n+'</h2><p>Chúc sếp Hồng Nhun Trần 8386, siêu nhiều sức khoẻ, luôn vui vẻ, tươi trẻ, tuổi mới hạnh phúc, yêu đời, không bị dl dí, ngày nào thức dậy cũng là ngày may mắn, yêu đời.<br>Cô Nhun nhớ chờ e lấy chồng giàu rồi đi cf 3 lần 1 ngày nhớ🤭 Hẹ Hẹ Hẹ😽<br>Hép pi hép pi bớt đâyyyyyy😘</p><p>'+(f?'Từ '+f:'Với tất cả lòng biết ơn')+' 🎂</p>';
+  c.style.display='block';
+  var E=['🎈','🎉','🎊','🌸','✨'];
+  for(var i=0;i<24;i++){var s=document.createElement('span');s.className='pop';s.textContent=E[i%5];s.style.left=Math.random()*95+'vw';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(function(x){x.remove()},3500,s)}
+  c.scrollIntoView({behavior:'smooth',block:'center'});
+};
+})();
+</script>
+</body>
+</html>
